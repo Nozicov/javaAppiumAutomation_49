@@ -129,6 +129,31 @@ public class First{
 
   }
 
+  @Test
+  public void testValidTextSearch(){
+
+    assertElementHasText(
+            By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+            "Search Wikipedia",
+            "Main: input search text not correct",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+            "Not Found Search: " + "Search Wikipedia" ,
+            5
+    );
+
+    assertElementHasText(
+            By.id("org.wikipedia:id/search_src_text"),
+            "Search…",
+            "Inside: input search text not correct",
+            5
+    );
+
+  }
+
   @After
   public void tearDown(){
     driver.quit();
@@ -168,6 +193,13 @@ public class First{
   private WebElement waitAndClear(By by, String error_message, int timeout){
     WebElement element = waitPresent(by, error_message, timeout);
     element.clear();
+    return element;
+  }
+
+  private WebElement assertElementHasText(By by, String text, String error_message, int timeout){
+    WebElement element = waitPresent(by, error_message, timeout);
+    String textFact = element.getAttribute("text");
+    Assert.assertEquals(error_message, text, textFact);
     return element;
   }
 
