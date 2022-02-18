@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -154,6 +155,51 @@ public class First{
 
   }
 
+  @Test
+  public void testSearchResultsList(){
+
+    waitAndClick(
+            By.id("org.wikipedia:id/search_container"),
+            "Not Found Search",
+            5
+    );
+
+    waitAndSendKeys(
+            By.id("org.wikipedia:id/search_src_text"),
+            "Java",
+            "Not Found Search Input",
+            5
+    );
+
+    List yesResult = findElements(
+            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"),
+            "Not results Search",
+            5
+    );
+    Assert.assertFalse("Not results (not correct)",yesResult.size() == 0);
+
+    waitAndClick(
+            By.id("org.wikipedia:id/search_close_btn"),
+            "Not Found element X in Search",
+            5
+    );
+
+    waitNotPresent(
+            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"),
+            "Yes results (not correct)",
+            5
+    );
+
+    assertElementHasText(
+            By.id("org.wikipedia:id/search_empty_message"),
+            "Search and read the free encyclopedia in your language",
+            "Not description main search page",
+            5
+    );
+
+
+  }
+
   @After
   public void tearDown(){
     driver.quit();
@@ -201,6 +247,12 @@ public class First{
     String textFact = element.getAttribute("text");
     Assert.assertEquals(error_message, text, textFact);
     return element;
+  }
+
+  private List findElements(By by, String error_message, int timeout){
+    waitPresent(by, error_message, timeout);
+    List<WebElement> listOfElements = driver.findElements(by);
+    return listOfElements;
   }
 
 }
