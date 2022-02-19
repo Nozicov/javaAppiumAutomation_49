@@ -13,12 +13,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.net.URL;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
-
 public class First{
 
   private AppiumDriver driver;
   private int timeout = 5;
+  private String searchWord = "Java";
 
   @Before
   public void setUp() throws Exception{
@@ -70,7 +69,7 @@ public class First{
 
     waitAndSendKeys(
             By.xpath("//*[@resource-id='org.wikipedia:id/search_src_text']"),
-            "Java",
+            searchWord,
             "Not Found Search Input",
             5
     );
@@ -166,17 +165,23 @@ public class First{
 
     waitAndSendKeys(
             By.id("org.wikipedia:id/search_src_text"),
-            "Java",
+            searchWord,
             "Not Found Search Input",
             5
     );
 
-    List yesResult = findElements(
-            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"),
+    List resultSearch = findElements(
+            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@resource-id='org.wikipedia:id/page_list_item_title']"),
             "Not results Search",
             5
     );
-    Assert.assertFalse("Not results (not correct)",yesResult.size() == 0);
+    Assert.assertFalse("Not results (not correct)",resultSearch.size() == 0);
+
+    boolean resultContainsSearch = containsTextForElementList(
+            resultSearch,
+            searchWord
+    );
+    Assert.assertTrue("Not all search results contain " + searchWord, resultContainsSearch);
 
     waitAndClick(
             By.id("org.wikipedia:id/search_close_btn"),
@@ -249,10 +254,22 @@ public class First{
     return element;
   }
 
-  private List findElements(By by, String error_message, int timeout){
+  private List<WebElement> findElements(By by, String error_message, int timeout){
     waitPresent(by, error_message, timeout);
     List<WebElement> listOfElements = driver.findElements(by);
     return listOfElements;
+  }
+
+  private boolean containsTextForElementList(List list, String text){
+  int n = 0;
+    for (int i = 0; i < list.size(); i ++ ){
+      WebElement element = (WebElement) list.get(i);
+      String title = element.getText();
+      if(title.contains(text)){
+        n++;
+      }
+    }
+    return n == list.size();
   }
 
 }
