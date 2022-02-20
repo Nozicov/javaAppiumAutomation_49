@@ -32,6 +32,7 @@ public class First{
     capabilities.setCapability("deviceName","emulator-5554");
     capabilities.setCapability("platformVersion","8.1");
     capabilities.setCapability("automationName","Appium");
+    capabilities.setCapability("orientation", "PORTRAIT");
     capabilities.setCapability("appPackage","org.wikipedia");
     capabilities.setCapability("appActivity",".main.MainActivity");
     capabilities.setCapability("app","C:\\Users\\Nozicov\\Desktop\\JavaAutomationTest\\GitHub\\javaAppiumAutomation_49\\apks\\org.wikipedia.apk");
@@ -656,6 +657,10 @@ public class First{
 
   @After
   public void tearDown(){
+    ScreenOrientation orientation = driver.getOrientation();
+    if (!orientation.toString().equals("PORTRAIT")){
+      driver.rotate(ScreenOrientation.PORTRAIT);
+    }
     driver.quit();
   }
 
