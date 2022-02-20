@@ -623,6 +623,37 @@ public class First{
 
   }
 
+  @Test
+  public void testPresentTitleArticle(){
+
+    waitAndClick(
+            By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+            "Not Found Search",
+            5
+    );
+
+    waitAndSendKeys(
+            By.xpath("//*[@resource-id='org.wikipedia:id/search_src_text']"),
+            searchWord,
+            "Not Found Search Input",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='" + searchArticleTitle + "']"),
+            "Cannot find '" + searchWord + "' article in search",
+            5
+    );
+
+    String locator_title = "org.wikipedia:id/view_page_title_text";
+
+    assertElementPresent(
+            By.id(locator_title),
+            "We`ve not found article title  " + searchArticleTitle
+    );
+
+  }
+
   @After
   public void tearDown(){
     driver.quit();
@@ -751,6 +782,14 @@ public class First{
     int amountOfElements = getAmountOfElements(by);
     if (amountOfElements > 0){
       String defaul_message = "An element '" + by.toString() + "' supposed to be not present";
+      throw new AssertionError(defaul_message + " " + error_message);
+    }
+  }
+
+  private void assertElementPresent(By by, String error_message){
+    int amountOfElements = getAmountOfElements(by);
+    if (amountOfElements == 0){
+      String defaul_message = "An element '" + by.toString() + "' supposed to be present";
       throw new AssertionError(defaul_message + " " + error_message);
     }
   }
