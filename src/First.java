@@ -509,6 +509,120 @@ public class First{
 
   }
 
+  @Test
+  public void testSaveAndRemoveArticlesToMyList() throws InterruptedException {
+    String articleTitleOne = searchArticleTitle;
+    String articleTitleTwo = "JavaScript";
+
+    searchAndOpenArticle(searchWord, articleTitleOne);
+
+    waitAndClick(
+            By.id("org.wikipedia:id/onboarding_button"),
+            "Cannot find 'GOT IT'",
+            10
+    );
+
+    waitAndClear(
+            By.id("org.wikipedia:id/text_input"),
+            "Cannot find input to set name of articles folder",
+            5
+    );
+
+    waitAndSendKeys(
+            By.id("org.wikipedia:id/text_input"),
+            folderFavorites,
+            "Cannot put text into articles input",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@text='OK']"),
+            "Cannot press OK button",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@content-desc='Navigate up']"),
+            "Cannot close article, cannot Navigate up (X)",
+            5
+    );
+
+    searchAndOpenArticle(searchWord, articleTitleTwo);
+
+    waitAndClick(
+            By.xpath("//*[@text='" + folderFavorites + "']"),
+            "Cannot find folder favorites '" + folderFavorites + "'",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@content-desc='Navigate up']"),
+            "Cannot close article, cannot Navigate up (X)",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@content-desc='My lists']"),
+            "Cannot find navigation button to My lists",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@text='" + folderFavorites + "']"),
+            "Cannot find created folder My lists",
+            5
+    );
+
+    waitPresent(
+            By.xpath("//*[@text='" + articleTitleOne + "']"),
+            "Cannot find one article in created My lists '" + articleTitleOne + "'",
+            5
+    );
+
+    waitPresent(
+            By.xpath("//*[@text='" + articleTitleTwo + "']"),
+            "Cannot find two article in created My lists '" + articleTitleTwo + "'",
+            5
+    );
+
+    swipeElementToLeft(
+            By.xpath("//*[@text='" + articleTitleTwo + "']"),
+            "Cannot find article '" + articleTitleTwo + "'"
+    );
+
+    waitNotPresent(
+            By.xpath("//*[@text='" + articleTitleTwo + "']"),
+            "Cannot delete saved article '" + articleTitleTwo + "'",
+            5
+    );
+
+    waitPresent(
+            By.xpath("//*[@text='" + articleTitleOne + "']"),
+            "Cannot find one article in created My lists '" + articleTitleOne + "'",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@text='" + articleTitleOne + "']"),
+            "Cannot find folder favorites '" + articleTitleOne + "'",
+            5
+    );
+
+    String title_full_article = waitForElementAndGetAttribute(
+            By.id("org.wikipedia:id/view_page_title_text"),
+            "text",
+            "Canot find title of articale",
+            15
+    );
+
+    Assert.assertEquals(
+            "Tittle not equals",
+            articleTitleOne,
+            title_full_article
+    );
+
+  }
+
   @After
   public void tearDown(){
     driver.quit();
@@ -644,6 +758,47 @@ public class First{
   private String waitForElementAndGetAttribute(By by, String attributes, String error_message, int timeoutInSeconds){
     WebElement element = waitPresent(by, error_message, timeoutInSeconds);
     return element.getAttribute(attributes);
+  }
+
+  private void searchAndOpenArticle(String searchWord, String ArticleTitle) throws InterruptedException {
+    waitAndClick(
+            By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+            "Cannot find 'Search Wikipedia' input for Search",
+            5
+    );
+
+    waitAndSendKeys(
+            By.xpath("//*[@resource-id='org.wikipedia:id/search_src_text']"),
+            searchWord,
+            "Cannot find input for Search",
+            5
+    );
+
+    waitAndClick(
+            By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='" + ArticleTitle + "']"),
+            "Cannot find '" + searchWord + "' article in search",
+            5
+    );
+
+    waitPresent(
+            By.id("org.wikipedia:id/view_page_title_text"),
+            "Cannot find article title",
+            15
+    );
+
+    waitAndClick(
+            By.xpath("//*[@content-desc='More options']"),
+            "Cannot find button to open article options",
+            5
+    );
+
+    Thread.sleep(1000);
+
+    waitAndClick(
+            By.xpath("//*[@text='Add to reading list']"),
+            "Cannot find option to add article to reading list",
+            10
+    );
   }
 
 }
